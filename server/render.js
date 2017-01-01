@@ -106,6 +106,9 @@ export function sendHTML (res, html) {
 }
 
 export function sendJSON (res, obj) {
+  if (res.query) {
+    obj.query = res.query
+  }
   const json = JSON.stringify(obj)
   res.setHeader('Content-Type', 'application/json')
   res.setHeader('Content-Length', Buffer.byteLength(json))

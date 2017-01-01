@@ -8,6 +8,40 @@ Next.js is a minimalistic framework for server-rendered React applications.
 
 **NOTE! the README on the `master` branch might not match that of the [latest stable release](https://github.com/zeit/next.js/releases/latest)! **
 
+## GEORGE UPDATEs
+
+### support before onBefore property function for link
+```jsx
+import Link from 'next/link'
+
+const onBefore = (next) => {
+  // do something before route to new page
+  next()
+}
+
+export default () => (
+  <div>Click <Link href="/about" onBefore={onBefore}><a>here</a></Link> to read more</div>
+)
+```
+
+### support customized route config in next.config.js
+```javascript
+// next.config.js
+module.exports = {
+  route: {
+    '/post/:id' : 'post'
+  }
+}
+```
+```jsx
+// pages/post
+class PostPage extends React.Component {
+  static async getInitialProps(ctx) {
+    const postId = ctx.query ? ctx.query.id : ''
+  }
+}
+```
+
 ## How to use
 
 Install it:
@@ -22,7 +56,7 @@ and add a script to your package.json like this:
 {
   "scripts": {
     "dev": "next"
-  } 
+  }
 }
 ```
 
@@ -180,9 +214,9 @@ Each top-level component receives a `url` property with the following API:
 
 ### Prefetching Pages
 
-Next.js exposes a module that configures a `ServiceWorker` automatically to prefetch pages: `next/prefetch`. 
+Next.js exposes a module that configures a `ServiceWorker` automatically to prefetch pages: `next/prefetch`.
 
-Since Next.js server-renders your pages, this allows all the future interaction paths of your app to be instant. Effectively Next.js gives you the great initial download performance of a _website_, with the ahead-of-time download capabilities of an _app_. [Read more](https://zeit.co/blog/next#anticipation-is-the-key-to-performance). 
+Since Next.js server-renders your pages, this allows all the future interaction paths of your app to be instant. Effectively Next.js gives you the great initial download performance of a _website_, with the ahead-of-time download capabilities of an _app_. [Read more](https://zeit.co/blog/next#anticipation-is-the-key-to-performance).
 
 #### Link prefetching
 
@@ -251,7 +285,7 @@ export default class Error extends React.Component {
 
 ### Custom configuration
 
-For custom advanced behavior of Next.js, you can create a `next.config.js` in the root of your project directory (next to `pages/` and `package.json`). 
+For custom advanced behavior of Next.js, you can create a `next.config.js` in the root of your project directory (next to `pages/` and `package.json`).
 
 Note: `next.config.js` is a regular Node.js module, not a JSON file. It gets used by the Next server and build phases, and not included in the browser build.
 
@@ -264,7 +298,7 @@ module.exports = {
 
 ### Customizing webpack config
 
-In order to extend our usage of `webpack`, you can define a function that extends its config. 
+In order to extend our usage of `webpack`, you can define a function that extends its config.
 
 The following example shows how you can use [`react-svg-loader`](https://github.com/boopathi/react-svg-loader) to easily import any `.svg` file as a React component, without modification.
 

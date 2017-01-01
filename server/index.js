@@ -2,6 +2,7 @@ import { resolve, join } from 'path'
 import { parse } from 'url'
 import http from 'http'
 import send from 'send'
+import getConfig from './config'
 import {
   renderToHTML,
   renderErrorToHTML,
@@ -12,6 +13,12 @@ import {
 import Router from './router'
 import HotReloader from './hot-reloader'
 import { resolveFromList } from './resolve'
+
+const config = getConfig(process.env.PWD)
+let customRoute = {}
+if (config.route) {
+  customRoute = config.route
+}
 
 export default class Server {
   constructor ({ dir = '.', dev = false, staticMarkup = false, quiet = false } = {}) {
@@ -65,8 +72,23 @@ export default class Server {
       await this.serveStatic(req, res, p)
     })
 
+    Object.keys(customRoute).forEach(routeKey => {
+      const path = customRoute[routeKey]
+      this.router.get('/_next/pages' + routeKey, async(req, res, params) => {
+        res.query = params
+        await this.renderJSON(res, path)
+      })
+
+      this.router.get(routeKey, async (req, res, params) => {
+        const { path, query } = parse(req.url, true)
+        res.query = params
+        await this.render(req, res, path, query)
+      })
+    })
+
+    // reasonable solution is to give an specific config json to assign path
     this.router.get('/_next/pages/:path*', async (req, res, params) => {
-      const paths = params.path || []
+      let paths = params.path || []
       const pathname = `/${paths.join('/')}`
       await this.renderJSON(res, pathname)
     })
